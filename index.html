@@ -164,7 +164,7 @@ footer p{color:var(--muted);line-height:2}
 </div>
 <div class="field">
 <label for="imageFile">اختر الصورة من جهازك</label>
-<input class="file-input" id="imageFile" type="file" accept="image/*" required>
+<input class="file-input" id="imageFile" type="file" accept="image/*,.jpg,.jpeg,.png,.webp" required>
 <div class="file-info" id="imageFileInfo">لم يتم اختيار أي صورة بعد.</div>
 </div>
 <button class="publish" id="imageButton" type="submit">نشر الصورة 🚀</button>
@@ -204,7 +204,6 @@ footer p{color:var(--muted);line-height:2}
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-// تم دمج الرابط والمفتاح بنجاح تام ✅
 const SUPABASE_URL = 'https://uyvpfojfgpuxuhjiffut.supabase.co'; 
 const SUPABASE_KEY = 'sb_publishable_OrKJXYiYr7-2R3oC9_jgvg_srqlLgCH'; 
 const BUCKET = 'algeria-media';
@@ -214,24 +213,35 @@ const $ = id => document.getElementById(id);
 
 function showStatus(id, message, type) {
     const el = $(id);
-    el.textContent = message;
-    el.className = 'status ' + type;
+    if(el) {
+        el.textContent = message;
+        el.className = 'status ' + type;
+    }
 }
 
 function showProgress(prefix, value, visible = true) {
-    $(prefix + 'Progress').style.display = visible ? 'block' : 'none';
-    $(prefix + 'ProgressBar').style.width = value + '%';
+    const prog = $(prefix + 'Progress');
+    const bar = $(prefix + 'ProgressBar');
+    if(prog && bar) {
+        prog.style.display = visible ? 'block' : 'none';
+        bar.style.width = value + '%';
+    }
 }
 
+// تحسين قراءة الملفات لتناسب هواتف الأندرويد والآيفون بدقة
 function setupFilePicker(inputId, infoId) {
-    $(inputId).addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) {
-            $(infoId).textContent = 'لم يتم اختيار أي ملف.';
-            return;
-        }
-        $(infoId).textContent = `الاسم: ${file.name}\nالحجم: ${(file.size / (1024*1024)).toFixed(2)} MB`;
-    });
+    const input = $(inputId);
+    const info = $(infoId);
+    if (input && info) {
+        input.addEventListener('change', (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) {
+                info.textContent = 'لم يتم اختيار أي ملف.';
+                return;
+            }
+            info.innerHTML = `✅ تم اختيار الملف: <strong style="color:var(--gold);">${file.name}</strong><br>الحجم: ${(file.size / (1024*1024)).toFixed(2)} MB`;
+        });
+    }
 }
 setupFilePicker('videoFile', 'videoFileInfo');
 setupFilePicker('imageFile', 'imageFileInfo');
@@ -239,6 +249,7 @@ setupFilePicker('imageFile', 'imageFileInfo');
 async function loadGallery() {
     const vg = $('videoGallery');
     const ig = $('imageGallery');
+    if(!vg || !ig) return;
 
     try {
         const { data, error } = await supabase.from('media').select('*').order('id', { ascending: false });
@@ -266,8 +277,12 @@ async function loadGallery() {
                 mediaEl.src = fileUrl;
                 mediaEl.alt = item.title;
                 mediaEl.addEventListener('click', () => {
-                    $('viewerImage').src = fileUrl;
-                    $('viewer').style.display = 'flex';
+                    const viewerImg = $('viewerImage');
+                    const viewer = $('viewer');
+                    if(viewerImg && viewer) {
+                        viewerImg.src = fileUrl;
+                        viewer.style.display = 'flex';
+                    }
                 });
             }
 
@@ -291,25 +306,34 @@ async function loadGallery() {
 }
 
 function handlePublish(config) {
-    $(config.form).addEventListener('submit', async (e) => {
+    const form = $(config.form);
+    if(!form) return;
+
+    form.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const title = $(config.title).value.trim();
-        const author = $(config.author).value.trim();
-        const file = $(config.file).files[0];
+        const titleInput = $(config.title);
+        const authorInput = $(config.author);
+        const fileInput = $(config.file);
         const btn = $(config.button);
 
+        const title = titleInput ? titleInput.value.trim() : '';
+        const author = authorInput ? authorInput.value.trim() : '';
+        const file = fileInput && fileInput.files ? fileInput.files[0] : null;
+
         if (!file) {
-            showStatus(config.status, 'يرجى اختيار ملف أولاً.', 'error');
+            showStatus(config.status, 'يرجى اختيار ملف من الجهاز أولاً.', 'error');
             return;
         }
 
-        btn.disabled = true;
-        btn.textContent = 'جاري النشر...';
+        if(btn) {
+            btn.disabled = true;
+            btn.textContent = 'جاري النشر...';
+        }
         showProgress(config.prefix, 30);
         showStatus(config.status, 'جاري رفع الملف إلى السحاب...', 'info');
 
         try {
-            const fileExt = file.name.split('.').pop();
+            const fileExt = file.name.split('.').pop() || 'jpg';
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
             const filePath = `${config.type}s/${fileName}`;
 
@@ -331,16 +355,19 @@ function handlePublish(config) {
             showProgress(config.prefix, 100);
             showStatus(config.status, 'تم النشر بنجاح وتحديث المعرض!', 'success');
             
-            $(config.form).reset();
-            $(config.info).textContent = 'لم يتم اختيار أي ملف بعد.';
+            form.reset();
+            const infoEl = $(config.info);
+            if(infoEl) infoEl.textContent = 'لم يتم اختيار أي ملف بعد.';
             await loadGallery();
 
-        } catch (err) {
+        } `catch` (err) {
             console.error(err);
             showStatus(config.status, 'حدث خطأ أثناء النشر: ' + err.message, 'error');
         } finally {
-            btn.disabled = false;
-            btn.textContent = config.type === 'video' ? 'نشر الفيديو 🚀' : 'نشر الصورة 🚀';
+            if(btn) {
+                btn.disabled = false;
+                btn.textContent = config.type === 'video' ? 'نشر الفيديو 🚀' : 'نشر الصورة 🚀';
+            }
             setTimeout(() => showProgress(config.prefix, 0, false), 2000);
         }
     });
@@ -358,8 +385,12 @@ handlePublish({
     status: 'imageStatus', prefix: 'image', type: 'image'
 });
 
-$('closeViewer').addEventListener('click', () => $('viewer').style.display = 'none');
-$('viewer').addEventListener('click', (e) => { if (e.target.id === 'viewer') $('viewer').style.display = 'none'; });
+const closeViewerBtn = $('closeViewer');
+const viewerModal = $('viewer');
+if(closeViewerBtn && viewerModal) {
+    closeViewerBtn.addEventListener('click', () => viewerModal.style.display = 'none');
+    viewerModal.addEventListener('click', (e) => { if (e.target.id === 'viewer') viewerModal.style.display = 'none'; });
+}
 
 loadGallery();
 </script>
