@@ -1,0 +1,756 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101b18">
+<title>تحيا الجزائر | ذاكرة الثورة</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800;900&family=Reem+Kufi:wght@500;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root{
+--green:#123b2d;
+--green2:#1b513b;
+--red:#a92732;
+--gold:#b49a65;
+--dark:#101b18;
+--dark2:#192722;
+--cream:#e9e1cf;
+--muted:#aaa895;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+margin:0;
+font-family:'Tajawal',sans-serif;
+background:var(--dark);
+color:var(--cream);
+overflow-x:hidden;
+}
+button,input{font-family:inherit}
+button{cursor:pointer}
+
+/* شاشة البداية */
+.intro{
+position:fixed;
+inset:0;
+z-index:10000;
+background:#101b18;
+display:flex;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+animation:introOut 1s ease 3s forwards;
+}
+.flag{
+width:min(260px,70vw);
+aspect-ratio:3/2;
+border:2px solid var(--gold);
+box-shadow:0 0 45px #b49a6540;
+}
+.flag svg{width:100%;height:100%}
+.intro h2{
+font-family:'Amiri',serif;
+color:var(--cream);
+font-size:28px;
+text-align:center;
+}
+.intro p{color:var(--gold);letter-spacing:3px}
+@keyframes introOut{
+to{opacity:0;visibility:hidden}
+}
+
+/* الواجهة الرئيسية */
+.hero{
+position:relative;
+min-height:570px;
+display:flex;
+align-items:center;
+justify-content:center;
+text-align:center;
+padding:90px 20px 80px;
+background:linear-gradient(90deg,#101b18ed,#123b2de8,#101b18ed);
+border-bottom:4px solid var(--gold);
+}
+.hero-content{position:relative;max-width:950px}
+.official{
+font-family:'Amiri',serif;
+font-size:clamp(23px,4vw,38px);
+margin:0 0 10px;
+}
+.school{
+color:var(--gold);
+font-size:clamp(19px,3vw,27px);
+font-weight:700;
+margin:10px 0 35px;
+}
+.divider{
+width:130px;height:2px;
+background:var(--gold);
+margin:25px auto;
+}
+.hero-title{
+font-family:'Reem Kufi',sans-serif;
+font-size:clamp(40px,8vw,85px);
+color:var(--cream);
+margin:10px 0;
+}
+.hero-subtitle{
+color:var(--muted);
+font-family:'Amiri',serif;
+font-size:23px;
+}
+.viva{
+font-family:'Reem Kufi',sans-serif;
+color:var(--gold);
+font-size:clamp(34px,6vw,55px);
+margin-top:25px;
+}
+.hero-date{color:var(--muted);font-size:17px;margin-top:15px}
+
+/* القائمة */
+nav{
+position:sticky;
+top:0;
+z-index:100;
+display:flex;
+justify-content:center;
+flex-wrap:wrap;
+gap:10px;
+padding:15px;
+background:#101b18f5;
+border-bottom:1px solid #b49a6540;
+backdrop-filter:blur(12px);
+}
+nav a{
+color:var(--cream);
+text-decoration:none;
+padding:10px 20px;
+border:1px solid #b49a6540;
+border-radius:4px;
+transition:.3s;
+font-weight:700;
+}
+nav a:hover{background:var(--green);border-color:var(--gold)}
+
+/* الأقسام */
+.section{
+max-width:1150px;
+margin:auto;
+padding:75px 22px;
+}
+.section-heading{text-align:center;margin-bottom:40px}
+.section-heading h2{
+font-family:'Amiri',serif;
+font-size:clamp(28px,5vw,42px);
+color:var(--gold);
+margin:0;
+}
+.section-heading p{color:var(--muted);font-size:16px}
+.history-box{
+background:linear-gradient(135deg,#192722,#14211c);
+border:1px solid #b49a6540;
+border-right:5px solid var(--gold);
+padding:30px;
+line-height:2.1;
+font-size:18px;
+border-radius:5px;
+text-align:center;
+}
+
+/* خانات الرفع */
+.upload-area{
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:25px;
+}
+.upload-card{
+background:linear-gradient(145deg,#1c2b24,#15211c);
+border:1px solid #b49a6550;
+border-radius:7px;
+padding:30px;
+box-shadow:0 12px 35px #0005;
+}
+.upload-icon{font-size:45px;margin-bottom:15px}
+.upload-card h3{
+color:var(--gold);
+font-family:'Amiri',serif;
+font-size:27px;
+margin:0 0 10px;
+}
+.upload-card p{color:var(--muted);line-height:1.8}
+.field{margin:20px 0}
+.field label{
+display:block;
+margin-bottom:9px;
+color:var(--cream);
+font-weight:700;
+}
+.field input{
+width:100%;
+padding:14px;
+border-radius:4px;
+border:1px solid #71684f;
+background:#101b18;
+color:white;
+outline:none;
+}
+.field input:focus{border-color:var(--gold)}
+.file-input{
+border:1px dashed var(--gold)!important;
+padding:18px!important;
+}
+.publish-btn{
+width:100%;
+padding:15px;
+background:var(--green2);
+border:1px solid var(--gold);
+color:white;
+font-size:18px;
+font-weight:800;
+border-radius:4px;
+transition:.3s;
+}
+.publish-btn:hover{background:var(--red)}
+.publish-btn:disabled{opacity:.5;cursor:not-allowed}
+.status{
+display:none;
+margin-top:15px;
+padding:13px;
+border-radius:4px;
+line-height:1.7;
+overflow-wrap:anywhere;
+}
+.status.success{display:block;background:#183b2b;color:#b8e3c8}
+.status.error{display:block;background:#51252a;color:#ffd0d0}
+.status.info{display:block;background:#263b42;color:#d4eaf1}
+.progress{
+display:none;
+margin-top:15px;
+height:9px;
+background:#333;
+border-radius:20px;
+overflow:hidden;
+}
+.progress-bar{
+width:0;
+height:100%;
+background:var(--gold);
+transition:width .3s;
+}
+
+/* المعارض */
+.gallery-section{
+background:#0d1613;
+border-top:1px solid #b49a6530;
+border-bottom:1px solid #b49a6530;
+}
+.gallery-grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+gap:22px;
+}
+.media-card{
+background:#1a2821;
+border:1px solid #b49a6540;
+border-radius:6px;
+overflow:hidden;
+box-shadow:0 8px 20px #0005;
+}
+.media-card img,.media-card video{
+width:100%;
+display:block;
+background:#000;
+max-height:450px;
+object-fit:contain;
+}
+.media-card img{cursor:zoom-in}
+.media-info{padding:17px}
+.media-info h3{
+color:var(--gold);
+font-size:20px;
+margin:0 0 10px;
+overflow-wrap:anywhere;
+}
+.media-info small{color:var(--muted)}
+.empty{
+grid-column:1/-1;
+text-align:center;
+padding:35px;
+color:var(--muted);
+border:1px dashed #b49a6550;
+}
+
+/* عرض الصورة */
+.viewer{
+display:none;
+position:fixed;
+inset:0;
+z-index:5000;
+background:#000e;
+justify-content:center;
+align-items:center;
+padding:20px;
+}
+.viewer img{max-width:95%;max-height:90vh;object-fit:contain}
+.close-viewer{
+position:absolute;
+top:20px;
+left:20px;
+background:var(--red);
+color:white;
+border:0;
+padding:12px 18px;
+font-size:20px;
+}
+
+/* التذييل */
+footer{
+text-align:center;
+padding:55px 20px;
+background:#101b18;
+border-top:3px solid var(--gold);
+}
+footer h2{
+font-family:'Reem Kufi',sans-serif;
+color:var(--gold);
+font-size:35px;
+}
+footer p{color:var(--muted);line-height:2}
+.footer-school{color:var(--cream);font-size:20px;font-weight:700}
+
+@media(max-width:750px){
+.upload-area{grid-template-columns:1fr}
+.hero{min-height:490px}
+.section{padding:50px 16px}
+nav a{padding:9px 12px;font-size:14px}
+.upload-card{padding:22px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- شاشة العلم -->
+<div class="intro">
+<div class="flag">
+<svg viewBox="0 0 900 600">
+<rect width="450" height="600" fill="#006233"/>
+<rect x="450" width="450" height="600" fill="#fff"/>
+<circle cx="450" cy="300" r="150" fill="#d21034"/>
+<circle cx="490" cy="275" r="120" fill="#fff"/>
+<polygon points="490,195 510,255 575,255 522,293 542,355 490,317 438,355 458,293 405,255 470,255" fill="#d21034"/>
+</svg>
+</div>
+<h2>مرحباً بكم في ذاكرة الثورة الجزائرية</h2>
+<p>1 NOVEMBRE 1954</p>
+</div>
+
+<!-- الواجهة -->
+<header class="hero" id="home">
+<div class="hero-content">
+<h2 class="official">الجمهورية الجزائرية الديمقراطية الشعبية</h2>
+<div class="school">ثانوية بن قاسم شاطو</div>
+<div class="divider"></div>
+<h1 class="hero-title">ذاكرة الثورة</h1>
+<div class="hero-subtitle">مجدٌ لا يُنسى... وتاريخٌ لا يموت</div>
+<div class="viva">تحيا الجزائر</div>
+<div class="hero-date">الذكرى الثانية والسبعون لاندلاع الثورة التحريرية</div>
+</div>
+</header>
+
+<nav>
+<a href="#home">الرئيسية</a>
+<a href="#about">عن الثورة</a>
+<a href="#upload">نشر المحتوى</a>
+<a href="#videos">الفيديوهات</a>
+<a href="#photos">الصور</a>
+</nav>
+
+<!-- عن الثورة -->
+<section class="section" id="about">
+<div class="section-heading">
+<h2>ملحمة وطن... وتاريخ أمة</h2>
+<p>الأول من نوفمبر 1954</p>
+</div>
+<div class="history-box">
+في الأول من نوفمبر سنة 1954، انطلقت الثورة التحريرية الجزائرية
+لتعلن بداية ملحمة تاريخية عظيمة، خاضها الشعب الجزائري دفاعاً
+عن الحرية والكرامة والاستقلال. بقيت تضحيات الشهداء والمجاهدين
+منارة للأجيال وذكرى خالدة في تاريخ الجزائر.
+</div>
+</section>
+
+<!-- الرفع -->
+<section class="section" id="upload">
+<div class="section-heading">
+<h2>منصة المساهمة والتوثيق</h2>
+<p>شاركنا ذكريات الثورة من خلال الصور والفيديوهات</p>
+</div>
+
+<div class="upload-area">
+
+<!-- رفع الفيديو -->
+<div class="upload-card">
+<div class="upload-icon">🎬</div>
+<h3>رفع الفيديوهات</h3>
+<p>انشر فيديوهاتك التوثيقية لتظهر في معرض الفيديوهات لجميع الزوار.</p>
+
+<form id="videoForm">
+<div class="field">
+<label>عنوان الفيديو</label>
+<input id="videoTitle" type="text" maxlength="150" placeholder="عنوان الفيديو..." required>
+</div>
+
+<div class="field">
+<label>اسم الناشر</label>
+<input id="videoAuthor" type="text" maxlength="60" placeholder="اسمك..." required>
+</div>
+
+<div class="field">
+<label>اختر الفيديو من جهازك</label>
+<input class="file-input" id="videoFile" type="file" accept="video/mp4,video/webm,video/ogg,video/quicktime" required>
+<small style="color:#b49a65">الحد الأقصى: 50 ميغابايت</small>
+</div>
+
+<button class="publish-btn" id="videoButton" type="submit">نشر الفيديو 🚀</button>
+<div class="progress" id="videoProgress">
+<div class="progress-bar" id="videoProgressBar"></div>
+</div>
+<div class="status" id="videoStatus"></div>
+</form>
+</div>
+
+<!-- رفع الصور -->
+<div class="upload-card">
+<div class="upload-icon">🖼️</div>
+<h3>رفع الصور</h3>
+<p>شارك صوراً تاريخية ووثائقية لتبقى جزءاً من ذاكرة الوطن.</p>
+
+<form id="imageForm">
+<div class="field">
+<label>عنوان الصورة</label>
+<input id="imageTitle" type="text" maxlength="150" placeholder="عنوان الصورة..." required>
+</div>
+
+<div class="field">
+<label>اسم الناشر</label>
+<input id="imageAuthor" type="text" maxlength="60" placeholder="اسمك..." required>
+</div>
+
+<div class="field">
+<label>اختر الصورة من جهازك</label>
+<input class="file-input" id="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif" required>
+<small style="color:#b49a65">الحد الأقصى: 50 ميغابايت</small>
+</div>
+
+<button class="publish-btn" id="imageButton" type="submit">نشر الصورة 🚀</button>
+<div class="progress" id="imageProgress">
+<div class="progress-bar" id="imageProgressBar"></div>
+</div>
+<div class="status" id="imageStatus"></div>
+</form>
+</div>
+
+</div>
+</section>
+
+<!-- معرض الفيديوهات -->
+<section class="gallery-section" id="videos">
+<div class="section">
+<div class="section-heading">
+<h2>معرض الفيديوهات التوثيقية</h2>
+<p>شاهد الفيديوهات التي شاركها الزوار</p>
+</div>
+<div class="gallery-grid" id="videoGallery">
+<div class="empty">جاري تحميل الفيديوهات...</div>
+</div>
+</div>
+</section>
+
+<!-- معرض الصور -->
+<section class="section" id="photos">
+<div class="section-heading">
+<h2>معرض الصور التاريخية</h2>
+<p>صور تحفظ ذاكرة الوطن وتخلّد تضحيات أبنائه</p>
+</div>
+<div class="gallery-grid" id="imageGallery">
+<div class="empty">جاري تحميل الصور...</div>
+</div>
+</section>
+
+<!-- عرض الصور المكبر -->
+<div class="viewer" id="viewer">
+<button class="close-viewer" id="closeViewer">إغلاق ✕</button>
+<img id="viewerImage" alt="صورة مكبرة">
+</div>
+
+<!-- التذييل -->
+<footer>
+<h2>تحيا الجزائر 🇩🇿</h2>
+<p>المجد والخلود لشهدائنا الأبرار</p>
+<div class="footer-school">ثانوية بن قاسم شاطو</div>
+<p>ذاكرة الثورة الجزائرية - 1954 / 1962</p>
+</footer>
+
+<!-- نظام التخزين -->
+<script type="module">
+import { createClient } from
+'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+/* ضع بيانات مشروع Supabase هنا */
+const SUPABASE_URL = 'ضع_PROJECT_URL_هنا';
+const SUPABASE_KEY = 'ضع_PUBLISHABLE_KEY_هنا';
+
+const BUCKET = 'algeria-media';
+const MAX_SIZE = 50 * 1024 * 1024;
+
+const supabase = createClient(SUPABASE_URL,SUPABASE_KEY);
+
+const TYPES = {
+video: ['video/mp4','video/webm','video/ogg','video/quicktime'],
+image: ['image/jpeg','image/png','image/webp','image/gif']
+};
+
+function setStatus(id,message,type){
+const el=document.getElementById(id);
+el.textContent=message;
+el.className='status '+type;
+}
+
+function setProgress(prefix,value,show=true){
+const box=document.getElementById(prefix+'Progress');
+const bar=document.getElementById(prefix+'ProgressBar');
+box.style.display=show?'block':'none';
+bar.style.width=value+'%';
+}
+
+function makeEmpty(container,message){
+container.innerHTML='';
+const div=document.createElement('div');
+div.className='empty';
+div.textContent=message;
+container.appendChild(div);
+}
+
+function createMediaCard(item,url){
+const card=document.createElement('article');
+card.className='media-card';
+
+let media;
+
+if(item.media_type==='video'){
+media=document.createElement('video');
+media.controls=true;
+media.preload='metadata';
+media.playsInline=true;
+media.src=url;
+}else{
+media=document.createElement('img');
+media.src=url;
+media.alt=item.title;
+media.loading='lazy';
+media.addEventListener('click',()=>{
+document.getElementById('viewerImage').src=url;
+document.getElementById('viewer').style.display='flex';
+});
+}
+
+const info=document.createElement('div');
+info.className='media-info';
+
+const title=document.createElement('h3');
+title.textContent=item.title;
+
+const author=document.createElement('small');
+author.textContent='نشر بواسطة: '+item.uploader;
+
+info.appendChild(title);
+info.appendChild(author);
+card.appendChild(media);
+card.appendChild(info);
+
+return card;
+}
+
+/* تحميل المعرضين */
+async function loadGallery(){
+const videoGallery=document.getElementById('videoGallery');
+const imageGallery=document.getElementById('imageGallery');
+
+try{
+const {data,error}=await supabase
+.from('media')
+.select('*')
+.order('created_at',{ascending:false});
+
+if(error)throw error;
+
+makeEmpty(videoGallery,'لا توجد فيديوهات منشورة حالياً.');
+makeEmpty(imageGallery,'لا توجد صور منشورة حالياً.');
+
+for(const item of data || []){
+const {data:publicData}=supabase.storage
+.from(BUCKET)
+.getPublicUrl(item.file_path);
+
+const card=createMediaCard(item,publicData.publicUrl);
+
+if(item.media_type==='video'){
+if(videoGallery.querySelector('.empty'))videoGallery.innerHTML='';
+videoGallery.appendChild(card);
+}else{
+if(imageGallery.querySelector('.empty'))imageGallery.innerHTML='';
+imageGallery.appendChild(card);
+}
+}
+}catch(error){
+console.error(error);
+makeEmpty(videoGallery,'تعذر تحميل الفيديوهات: '+error.message);
+makeEmpty(imageGallery,'تعذر تحميل الصور: '+error.message);
+}
+}
+
+/* رفع صورة أو فيديو */
+async function uploadMedia(config){
+const {
+formId,titleId,authorId,fileId,
+buttonId,statusId,progressPrefix,type
+}=config;
+
+const form=document.getElementById(formId);
+const button=document.getElementById(buttonId);
+
+form.addEventListener('submit',async(event)=>{
+event.preventDefault();
+
+const title=document.getElementById(titleId).value.trim();
+const author=document.getElementById(authorId).value.trim();
+const file=document.getElementById(fileId).files[0];
+
+if(!title||!author||!file){
+setStatus(statusId,'يرجى ملء جميع الخانات واختيار الملف.','error');
+return;
+}
+
+if(!TYPES[type].includes(file.type)){
+setStatus(statusId,'نوع الملف غير مدعوم. اختر ملفاً بصيغة مناسبة.','error');
+return;
+}
+
+if(file.size>MAX_SIZE){
+setStatus(statusId,'حجم الملف أكبر من 50 ميغابايت.','error');
+return;
+}
+
+button.disabled=true;
+button.textContent='جاري النشر...';
+setProgress(progressPrefix,10);
+setStatus(statusId,'جاري رفع الملف إلى التخزين السحابي...','info');
+
+const extension=file.name.split('.').pop().toLowerCase();
+const path=type+'s/'+crypto.randomUUID()+'.'+extension;
+
+let uploadedPath=null;
+
+try{
+/* رفع الملف */
+const {data:uploaded,error:uploadError}=await supabase.storage
+.from(BUCKET)
+.upload(path,file,{
+cacheControl:'3600',
+upsert:false,
+contentType:file.type
+});
+
+if(uploadError)throw uploadError;
+
+uploadedPath=uploaded.path;
+setProgress(progressPrefix,80);
+
+/* حفظ بيانات المنشور */
+const {error:insertError}=await supabase
+.from('media')
+.insert({
+title:title,
+media_type:type,
+file_path:uploadedPath,
+file_type:file.type,
+uploader:author
+});
+
+if(insertError)throw insertError;
+
+setProgress(progressPrefix,100);
+setStatus(statusId,'تم النشر بنجاح! أصبح المحتوى متاحاً لجميع الزوار.','success');
+
+form.reset();
+await loadGallery();
+
+}catch(error){
+console.error('Upload error:',error);
+
+/* حذف الملف إذا فشل حفظ بياناته */
+if(uploadedPath){
+const {error:removeError}=await supabase.storage
+.from(BUCKET).remove([uploadedPath]);
+
+if(removeError)console.error('Cleanup error:',removeError);
+}
+
+setStatus(statusId,'فشل النشر: '+error.message,'error');
+
+}finally{
+button.disabled=false;
+button.textContent=type==='video'?'نشر الفيديو 🚀':'نشر الصورة 🚀';
+
+setTimeout(()=>{
+setProgress(progressPrefix,0,false);
+},2500);
+}
+});
+}
+
+uploadMedia({
+formId:'videoForm',
+titleId:'videoTitle',
+authorId:'videoAuthor',
+fileId:'videoFile',
+buttonId:'videoButton',
+statusId:'videoStatus',
+progressPrefix:'video',
+type:'video'
+});
+
+uploadMedia({
+formId:'imageForm',
+titleId:'imageTitle',
+authorId:'imageAuthor',
+fileId:'imageFile',
+buttonId:'imageButton',
+statusId:'imageStatus',
+progressPrefix:'image',
+type:'image'
+});
+
+/* تكبير الصور */
+document.getElementById('closeViewer').addEventListener('click',()=>{
+document.getElementById('viewer').style.display='none';
+document.getElementById('viewerImage').src='';
+});
+
+document.getElementById('viewer').addEventListener('click',(event)=>{
+if(event.target.id==='viewer'){
+event.currentTarget.style.display='none';
+document.getElementById('viewerImage').src='';
+}
+});
+
+/* تشغيل الموقع */
+loadGallery();
+</script>
+
+</body>
+</html>
