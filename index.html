@@ -228,7 +228,6 @@ function showProgress(prefix, value, visible = true) {
     }
 }
 
-// تحسين قراءة الملفات لتناسب هواتف الأندرويد والآيفون بدقة
 function setupFilePicker(inputId, infoId) {
     const input = $(inputId);
     const info = $(infoId);
@@ -360,9 +359,9 @@ function handlePublish(config) {
             if(infoEl) infoEl.textContent = 'لم يتم اختيار أي ملف بعد.';
             await loadGallery();
 
-        } `catch` (err) {
+        } catch (err) {
             console.error(err);
-            showStatus(config.status, 'حدث خطأ أثناء النشر: ' + err.message, 'error');
+            showStatus(config.status, 'حدث خطأ أثناء النشر: ' + (err.message || 'خطأ غير معروف'), 'error');
         } finally {
             if(btn) {
                 btn.disabled = false;
