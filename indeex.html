@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -46,8 +45,8 @@ nav a:hover{background:var(--green)}
 .field input{width:100%;padding:14px;border-radius:4px;border:1px solid #71684f;background:#101b18;color:white}
 .file-input{border:1px dashed var(--gold)!important;padding:15px!important}
 .file-info{margin-top:12px;padding:12px;background:#101b18;border:1px solid #b49a6540;border-radius:4px;color:#d7c49a;overflow-wrap:anywhere;line-height:1.7}
-.publish{width:100%;padding:15px;background:var(--green2);border:1px solid var(--gold);color:white;font-size:18px;font-weight:bold;border-radius:4px}
-.publish:disabled{opacity:.5}
+.publish{width:100%;padding:15px;background:var(--green2);border:1px solid var(--gold);color:white;font-size:18px;font-weight:bold;border-radius:4px;cursor:pointer}
+.publish:disabled{opacity:.5;cursor:not-allowed}
 .status{display:none;margin-top:14px;padding:13px;line-height:1.7;overflow-wrap:anywhere}
 .status.success{display:block;background:#183b2b;color:#b8e3c8}
 .status.error{display:block;background:#51252a;color:#ffd0d0}
@@ -60,12 +59,12 @@ nav a:hover{background:var(--green)}
 .card img,.card video{display:block;width:100%;max-height:450px;object-fit:contain;background:#000}
 .card img{cursor:zoom-in}
 .card-info{padding:15px}
-.card-info h3{color:var(--gold);overflow-wrap:anywhere}
+.card-info h3{color:var(--gold);overflow-wrap:anywhere;margin:0 0 8px 0}
 .card-info small{color:var(--muted)}
 .empty{grid-column:1/-1;text-align:center;padding:30px;color:var(--muted)}
 .viewer{display:none;position:fixed;inset:0;z-index:500;background:#000e;align-items:center;justify-content:center;padding:20px}
 .viewer img{max-width:95%;max-height:90vh}
-.close-viewer{position:absolute;top:15px;left:15px;padding:12px;background:var(--red);color:white;border:0}
+.close-viewer{position:absolute;top:15px;left:15px;padding:12px;background:var(--red);color:white;border:0;cursor:pointer}
 footer{text-align:center;padding:45px 15px;border-top:3px solid var(--gold)}
 footer h2{font:900 36px "Reem Kufi";color:var(--gold)}
 footer p{color:var(--muted);line-height:2}
@@ -141,7 +140,7 @@ footer p{color:var(--muted);line-height:2}
 </div>
 <div class="field">
 <label for="videoFile">اختر الفيديو من جهازك</label>
-<input class="file-input" id="videoFile" name="videoFile" type="file" accept="video/*,.mp4,.mov,.webm,.3gp,.m4v" required>
+<input class="file-input" id="videoFile" type="file" accept="video/*,.mp4,.mov,.webm,.3gp,.m4v" required>
 <div class="file-info" id="videoFileInfo">لم يتم اختيار أي فيديو بعد.</div>
 </div>
 <button class="publish" id="videoButton" type="submit">نشر الفيديو 🚀</button>
@@ -165,7 +164,7 @@ footer p{color:var(--muted);line-height:2}
 </div>
 <div class="field">
 <label for="imageFile">اختر الصورة من جهازك</label>
-<input class="file-input" id="imageFile" name="imageFile" type="file" accept="image/*" required>
+<input class="file-input" id="imageFile" type="file" accept="image/*" required>
 <div class="file-info" id="imageFileInfo">لم يتم اختيار أي صورة بعد.</div>
 </div>
 <button class="publish" id="imageButton" type="submit">نشر الصورة 🚀</button>
@@ -187,6 +186,7 @@ footer p{color:var(--muted);line-height:2}
 <section class="section" id="photos">
 <div class="heading"><h2>معرض الصور التاريخية</h2><p>صور تحفظ ذاكرة الوطن</p></div>
 <div class="gallery" id="imageGallery"><div class="empty">جاري تحميل الصور...</div></div>
+</div>
 </section>
 
 <div class="viewer" id="viewer">
@@ -204,242 +204,162 @@ footer p{color:var(--muted);line-height:2}
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
-/* أدخل بيانات مشروعك */
-const SUPABASE_URL = 'ضع_PROJECT_URL_هنا';
-const SUPABASE_KEY = 'ضع_PUBLISHABLE_KEY_هنا';
+// تم دمج الرابط والمفتاح بنجاح تام ✅
+const SUPABASE_URL = 'https://uyvpfojfgpuxuhjiffut.supabase.co'; 
+const SUPABASE_KEY = 'sb_publishable_OrKJXYiYr7-2R3oC9_jgvg_srqlLgCH'; 
 const BUCKET = 'algeria-media';
-const MAX_SIZE = 50 * 1024 * 1024;
 
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 const $ = id => document.getElementById(id);
 
-function showStatus(id,message,type){
-const el=$(id);
-el.textContent=message;
-el.className='status '+type;
+function showStatus(id, message, type) {
+    const el = $(id);
+    el.textContent = message;
+    el.className = 'status ' + type;
 }
 
-function showProgress(prefix,value,visible=true){
-$(prefix+'Progress').style.display=visible?'block':'none';
-$(prefix+'ProgressBar').style.width=value+'%';
+function showProgress(prefix, value, visible = true) {
+    $(prefix + 'Progress').style.display = visible ? 'block' : 'none';
+    $(prefix + 'ProgressBar').style.width = value + '%';
 }
 
-/* إظهار الملف المختار فوراً، بصورة مستقلة عن Supabase */
-function connectFilePicker(inputId,infoId,type){
-const input=$(inputId);
-const info=$(infoId);
+function setupFilePicker(inputId, infoId) {
+    $(inputId).addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) {
+            $(infoId).textContent = 'لم يتم اختيار أي ملف.';
+            return;
+        }
+        $(infoId).textContent = `الاسم: ${file.name}\nالحجم: ${(file.size / (1024*1024)).toFixed(2)} MB`;
+    });
+}
+setupFilePicker('videoFile', 'videoFileInfo');
+setupFilePicker('imageFile', 'imageFileInfo');
 
-input.addEventListener('change',()=>{
-const file=input.files?.[0];
+async function loadGallery() {
+    const vg = $('videoGallery');
+    const ig = $('imageGallery');
 
-if(!file){
-info.textContent='لم يتم اختيار أي ملف.';
-return;
+    try {
+        const { data, error } = await supabase.from('media').select('*').order('id', { ascending: false });
+        if (error) throw error;
+
+        vg.innerHTML = '<div class="empty">لا توجد فيديوهات منشورة حالياً.</div>';
+        ig.innerHTML = '<div class="empty">لا توجد صور منشورة حالياً.</div>';
+
+        if (!data || data.length === 0) return;
+
+        for (const item of data) {
+            const { data: publicURLData } = supabase.storage.from(BUCKET).getPublicUrl(item.file_path);
+            const fileUrl = publicURLData.publicUrl;
+
+            const card = document.createElement('article');
+            card.className = 'card';
+
+            let mediaEl;
+            if (item.media_type === 'video') {
+                mediaEl = document.createElement('video');
+                mediaEl.controls = true;
+                mediaEl.src = fileUrl;
+            } else {
+                mediaEl = document.createElement('img');
+                mediaEl.src = fileUrl;
+                mediaEl.alt = item.title;
+                mediaEl.addEventListener('click', () => {
+                    $('viewerImage').src = fileUrl;
+                    $('viewer').style.display = 'flex';
+                });
+            }
+
+            const info = document.createElement('div');
+            info.className = 'card-info';
+            info.innerHTML = `<h3>${item.title}</h3><small>نشر بواسطة: ${item.uploader}</small>`;
+            
+            card.append(mediaEl, info);
+
+            if (item.media_type === 'video') {
+                if (vg.querySelector('.empty')) vg.innerHTML = '';
+                vg.appendChild(card);
+            } else {
+                if (ig.querySelector('.empty')) ig.innerHTML = '';
+                ig.appendChild(card);
+            }
+        }
+    } catch (err) {
+        console.error(err);
+    }
 }
 
-info.textContent='الاسم: '+file.name+
-'\nالحجم: '+(file.size/1048576).toFixed(2)+' MB'+
-'\nالنوع: '+(file.type||'غير محدد');
-});
+function handlePublish(config) {
+    $(config.form).addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const title = $(config.title).value.trim();
+        const author = $(config.author).value.trim();
+        const file = $(config.file).files[0];
+        const btn = $(config.button);
+
+        if (!file) {
+            showStatus(config.status, 'يرجى اختيار ملف أولاً.', 'error');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = 'جاري النشر...';
+        showProgress(config.prefix, 30);
+        showStatus(config.status, 'جاري رفع الملف إلى السحاب...', 'info');
+
+        try {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+            const filePath = `${config.type}s/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage.from(BUCKET).upload(filePath, file);
+            if (uploadError) throw uploadError;
+
+            showProgress(config.prefix, 80);
+            showStatus(config.status, 'جاري حفظ البيانات...', 'info');
+
+            const { error: dbError } = await supabase.from('media').insert([{
+                title: title,
+                media_type: config.type,
+                file_path: filePath,
+                uploader: author
+            }]);
+
+            if (dbError) throw dbError;
+
+            showProgress(config.prefix, 100);
+            showStatus(config.status, 'تم النشر بنجاح وتحديث المعرض!', 'success');
+            
+            $(config.form).reset();
+            $(config.info).textContent = 'لم يتم اختيار أي ملف بعد.';
+            await loadGallery();
+
+        } catch (err) {
+            console.error(err);
+            showStatus(config.status, 'حدث خطأ أثناء النشر: ' + err.message, 'error');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = config.type === 'video' ? 'نشر الفيديو 🚀' : 'نشر الصورة 🚀';
+            setTimeout(() => showProgress(config.prefix, 0, false), 2000);
+        }
+    });
 }
 
-connectFilePicker('videoFile','videoFileInfo','video');
-connectFilePicker('imageFile','imageFileInfo','image');
-
-/* التأكد من تحميل المكتبة والإعدادات */
-let supabase=null;
-let initError='';
-
-try{
-if(SUPABASE_URL.includes('ضع_') || SUPABASE_KEY.includes('ضع_')){
-throw new Error('لم تدخل رابط مشروع Supabase والمفتاح العام بعد.');
-}
-supabase=createClient(SUPABASE_URL,SUPABASE_KEY);
-}catch(error){
-initError=error.message;
-console.error(error);
-}
-
-function makeEmpty(container,message){
-container.innerHTML='';
-const div=document.createElement('div');
-div.className='empty';
-div.textContent=message;
-container.appendChild(div);
-}
-
-function createCard(item,url){
-const card=document.createElement('article');
-card.className='card';
-
-let media;
-if(item.media_type==='video'){
-media=document.createElement('video');
-media.controls=true;
-media.preload='metadata';
-media.playsInline=true;
-media.src=url;
-}else{
-media=document.createElement('img');
-media.src=url;
-media.alt=item.title;
-media.loading='lazy';
-media.addEventListener('click',()=>{
-$('viewerImage').src=url;
-$('viewer').style.display='flex';
-});
-}
-
-const info=document.createElement('div');
-info.className='card-info';
-const title=document.createElement('h3');
-title.textContent=item.title;
-const author=document.createElement('small');
-author.textContent='نشر بواسطة: '+item.uploader;
-info.append(title,author);
-card.append(media,info);
-return card;
-}
-
-async function loadGallery(){
-if(!supabase){
-makeEmpty($('videoGallery'),'تعذر الاتصال: '+initError);
-makeEmpty($('imageGallery'),'تعذر الاتصال: '+initError);
-return;
-}
-
-const vg=$('videoGallery');
-const ig=$('imageGallery');
-
-try{
-const {data,error}=await supabase.from('media').select('*').order('created_at',{ascending:false});
-if(error)throw error;
-
-makeEmpty(vg,'لا توجد فيديوهات منشورة حالياً.');
-makeEmpty(ig,'لا توجد صور منشورة حالياً.');
-
-for(const item of data||[]){
-const {data:publicData}=supabase.storage.from(BUCKET).getPublicUrl(item.file_path);
-const card=createCard(item,publicData.publicUrl);
-if(item.media_type==='video'){
-if(vg.querySelector('.empty'))vg.innerHTML='';
-vg.appendChild(card);
-}else{
-if(ig.querySelector('.empty'))ig.innerHTML='';
-ig.appendChild(card);
-}
-}
-}catch(error){
-console.error(error);
-makeEmpty(vg,'خطأ تحميل الفيديوهات: '+error.message);
-makeEmpty(ig,'خطأ تحميل الصور: '+error.message);
-}
-}
-
-async function publishMedia(config){
-const form=$(config.form);
-const button=$(config.button);
-
-form.addEventListener('submit',async event=>{
-event.preventDefault();
-
-const title=$(config.title).value.trim();
-const author=$(config.author).value.trim();
-const file=$(config.file).files?.[0];
-
-if(!file){
-showStatus(config.status,'لم يتم استلام الملف. اختره مرة أخرى.','error');
-return;
-}
-if(!title||!author){
-showStatus(config.status,'يرجى إدخال العنوان واسم الناشر.','error');
-return;
-}
-if(file.size===0){
-showStatus(config.status,'الملف فارغ أو لم تتم قراءته بصورة صحيحة.','error');
-return;
-}
-if(file.size>MAX_SIZE){
-showStatus(config.status,'حجم الملف يتجاوز 50 ميغابايت.','error');
-return;
-}
-if(!supabase){
-showStatus(config.status,initError,'error');
-return;
-}
-
-button.disabled=true;
-button.textContent='جاري النشر...';
-showProgress(config.prefix,10);
-showStatus(config.status,'تم اختيار الملف. جاري الاتصال بالتخزين...','info');
-
-let path=null;
-
-try{
-const extension=(file.name.split('.').pop()||'bin').toLowerCase();
-path=config.type+'s/'+crypto.randomUUID()+'.'+extension;
-
-const {data,error}=await supabase.storage.from(BUCKET).upload(path,file,{
-cacheControl:'3600',
-upsert:false,
-contentType:file.type||'application/octet-stream'
-});
-if(error)throw error;
-
-showProgress(config.prefix,75);
-showStatus(config.status,'تم رفع الملف. جاري حفظ بيانات المنشور...','info');
-
-const {error:dbError}=await supabase.from('media').insert({
-title,
-media_type:config.type,
-file_path:data.path,
-file_type:file.type||'application/octet-stream',
-uploader:author
-});
-if(dbError)throw dbError;
-
-showProgress(config.prefix,100);
-showStatus(config.status,'تم النشر بنجاح!','success');
-form.reset();
-$(config.info).textContent='لم يتم اختيار أي ملف بعد.';
-await loadGallery();
-
-}catch(error){
-console.error('Publish error:',error);
-if(path){
-const {error:cleanupError}=await supabase.storage.from(BUCKET).remove([path]);
-if(cleanupError)console.error(cleanupError);
-}
-showStatus(config.status,'تعذر النشر: '+(error.message||'خطأ غير معروف'),'error');
-}finally{
-button.disabled=false;
-button.textContent=config.type==='video'?'نشر الفيديو 🚀':'نشر الصورة 🚀';
-setTimeout(()=>showProgress(config.prefix,0,false),2000);
-}
-});
-}
-
-publishMedia({
-form:'videoForm',title:'videoTitle',author:'videoAuthor',
-file:'videoFile',info:'videoFileInfo',button:'videoButton',
-status:'videoStatus',prefix:'video',type:'video'
+handlePublish({
+    form: 'videoForm', title: 'videoTitle', author: 'videoAuthor',
+    file: 'videoFile', info: 'videoFileInfo', button: 'videoButton',
+    status: 'videoStatus', prefix: 'video', type: 'video'
 });
 
-publishMedia({
-form:'imageForm',title:'imageTitle',author:'imageAuthor',
-file:'imageFile',info:'imageFileInfo',button:'imageButton',
-status:'imageStatus',prefix:'image',type:'image'
+handlePublish({
+    form: 'imageForm', title: 'imageTitle', author: 'imageAuthor',
+    file: 'imageFile', info: 'imageFileInfo', button: 'imageButton',
+    status: 'imageStatus', prefix: 'image', type: 'image'
 });
 
-$('closeViewer').addEventListener('click',()=>{
-$('viewer').style.display='none';
-$('viewerImage').src='';
-});
-$('viewer').addEventListener('click',event=>{
-if(event.target.id==='viewer'){
-$('viewer').style.display='none';
-$('viewerImage').src='';
-}
-});
+$('closeViewer').addEventListener('click', () => $('viewer').style.display = 'none');
+$('viewer').addEventListener('click', (e) => { if (e.target.id === 'viewer') $('viewer').style.display = 'none'; });
 
 loadGallery();
 </script>
